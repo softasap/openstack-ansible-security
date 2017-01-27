@@ -38,7 +38,7 @@ chrony_conf_file: /etc/chrony/chrony.conf
 cron_service: cron
 ssh_service: ssh
 chrony_service: chrony
-clamav_service: clamd
+clamav_service: clamav-daemon
 
 # Commands
 grub_update_cmd: "update-grub"
@@ -103,6 +103,8 @@ stig_packages:
 # RHEL 7 STIG: Packages to add/remove
 stig_packages_rhel7:
   - packages:
+      - auditd
+      - audispd-plugins
       - aide
       - aide-common
       - libpwquality-common
@@ -117,6 +119,10 @@ stig_packages_rhel7:
       - apparmor-utils
     state: "{{ security_package_state }}"
     enabled: "{{ security_rhel7_enable_linux_security_module }}"
+  - packages:
+      - chrony
+    state: "{{ security_package_state }}"
+    enabled: "{{ security_rhel7_enable_chrony }}"
   - packages:
       - clamav
       - clamav-daemon
