@@ -293,9 +293,10 @@ shadow_utils_rhel7:
   - parameter: PASS_MAX_DAYS
     value: "{{ security_password_max_lifetime_days | default('') }}"
     stig_id: RHEL-07-010220
-  - parameter: FAIL_DELAY
-    value: "{{ security_shadow_utils_fail_delay | default('') }}"
-    stig_id: RHEL-07-010420
+  #   [VS]  No such parameter in ubuntu
+  # - parameter: FAIL_DELAY
+  #   value: "{{ security_shadow_utils_fail_delay | default('') }}"
+  #   stig_id: RHEL-07-010420
   - parameter: UMASK
     value: "{{ security_shadow_utils_umask | default('') }}"
     stig_id: RHEL-07-020230

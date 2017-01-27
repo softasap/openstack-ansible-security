@@ -220,74 +220,74 @@
     - RHEL-07-040160
 
 # [VS] This part needs to be revisited
-# - name: Start and enable chrony
-#   service:
-#     name: "{{ chrony_service }}"
-#     state: started
-#     enabled: yes
-#   when:
-#     - not check_mode
-#     - security_rhel7_enable_chrony | bool
-#   tags:
-#     - medium
-#     - misc
-#     - RHEL-07-040210
-#
-# - name: Check if chrony configuration file exists
-#   stat:
-#     path: "{{ chrony_conf_file }}"
-#   register: chrony_conf_check
-#   tags:
-#     - always
-#
-# - name: RHEL-07-040210 - Synchronize system clock (configuration file)
-#   template:
-#     src: chrony.conf.j2
-#     dest: "{{ chrony_conf_file }}"
-#   when:
-#     - chrony_conf_check.stat.exists
-#     - security_rhel7_enable_chrony | bool
-#   notify:
-#     - restart chrony
-#   tags:
-#     - medium
-#     - misc
-#     - RHEL-07-040210
-#
-# # Returns 0 if installed, 3 if not installed
-# - name: Check firewalld status
-#   command: systemctl status firewalld
-#   register: firewalld_status_check
-#   failed_when: firewalld_status_check.rc not in [0,3,4]
-#   changed_when: False
-#   check_mode: no
-#   tags:
-#     - always
-#
-# - name: Ensure firewalld is running and enabled
-#   service:
-#     name: firewalld
-#     state: started
-#     enabled: yes
-#   when:
-#     - firewalld_status_check.rc not in [3,4]
-#     - security_enable_firewalld | bool
-#   tags:
-#     - medium
-#     - misc
-#     - RHEL-07-040290
-#
-# - name: Limit new TCP connections to 25/minute and allow bursting to 100
-#   command: "firewall-cmd --direct --add-rule ipv4 filter IN_public_allow 0 -m tcp -p tcp -m limit --limit {{ security_enable_firewalld_rate_limit_per_minute }}/minute --limit-burst {{ security_enable_firewalld_rate_limit_burst }} -j ACCEPT"
-#   register: add_rate_limit_firewalld_rule
-#   changed_when: "'ALREADY_ENABLED' not in add_rate_limit_firewalld_rule.stdout"
-#   when:
-#     - firewalld_status_check.rc != 3
-#     - security_enable_firewalld_rate_limit | bool
-#   tags:
-#     - medium
-#     - misc
-#     - RHEL-07-040250
+- name: Start and enable chrony
+  service:
+    name: "{{ chrony_service }}"
+    state: started
+    enabled: yes
+  when:
+    - not check_mode
+    - security_rhel7_enable_chrony | bool
+  tags:
+    - medium
+    - misc
+    - RHEL-07-040210
+
+- name: Check if chrony configuration file exists
+  stat:
+    path: "{{ chrony_conf_file }}"
+  register: chrony_conf_check
+  tags:
+    - always
+
+- name: RHEL-07-040210 - Synchronize system clock (configuration file)
+  template:
+    src: chrony.conf.j2
+    dest: "{{ chrony_conf_file }}"
+  when:
+    - chrony_conf_check.stat.exists
+    - security_rhel7_enable_chrony | bool
+  notify:
+    - restart chrony
+  tags:
+    - medium
+    - misc
+    - RHEL-07-040210
+
+# Returns 0 if installed, 3 if not installed
+- name: Check firewalld status
+  command: systemctl status firewalld
+  register: firewalld_status_check
+  failed_when: firewalld_status_check.rc not in [0,3,4]
+  changed_when: False
+  check_mode: no
+  tags:
+    - always
+
+- name: Ensure firewalld is running and enabled
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  when:
+    - firewalld_status_check.rc not in [3,4]
+    - security_enable_firewalld | bool
+  tags:
+    - medium
+    - misc
+    - RHEL-07-040290
+
+- name: Limit new TCP connections to 25/minute and allow bursting to 100
+  command: "firewall-cmd --direct --add-rule ipv4 filter IN_public_allow 0 -m tcp -p tcp -m limit --limit {{ security_enable_firewalld_rate_limit_per_minute }}/minute --limit-burst {{ security_enable_firewalld_rate_limit_burst }} -j ACCEPT"
+  register: add_rate_limit_firewalld_rule
+  changed_when: "'ALREADY_ENABLED' not in add_rate_limit_firewalld_rule.stdout"
+  when:
+    - firewalld_status_check.rc != 3
+    - security_enable_firewalld_rate_limit | bool
+  tags:
+    - medium
+    - misc
+    - RHEL-07-040250
 
 # Linting checks need to be skipped because this command doesn't create any
 # files.
